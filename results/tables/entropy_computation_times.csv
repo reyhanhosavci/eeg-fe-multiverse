@@ -1,0 +1,6 @@
+feature,n_combinations,n_new_combinations,n_skipped,n_segments,n_calculations,total_sec,per_segment_sec,nan_count
+permen,25,0,25,500,0,0.01,0.0113,0
+lzc,6,0,6,500,0,0.0,0.005,0
+sampen,15,12,3,500,6000,5041.61,0.8403,0
+apen,15,15,0,500,7500,6086.09,0.8115,0
+fuzzen,27,27,0,500,13500,16147.0,1.1961,0

@@ -1,0 +1,7 @@
+threshold,multiscale,acc_5fold,std_5fold,acc_lopo,std_lopo
+median,False,0.5223,0.031,0.472,0.1471
+median,True,0.5098,0.0652,0.5417,0.0879
+mean,False,0.561,0.0334,0.5313,0.1127
+mean,True,0.5098,0.0652,0.5417,0.0879
+zero,False,0.5834,0.0383,0.5461,0.1409
+zero,True,0.5098,0.0652,0.5417,0.0879
