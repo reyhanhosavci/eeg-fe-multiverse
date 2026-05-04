@@ -1,0 +1,102 @@
+# =============================================================================
+# Feature Extraction Multiverse — Hyperparameter Grid
+# =============================================================================
+# Each feature family lists the parameters to sweep. Classification pipeline
+# parameters (LightGBM, CV) are fixed; only feature hyperparameters vary.
+# Total combinations: 190
+# =============================================================================
+
+# --- Entropy Features --------------------------------------------------------
+
+sample_entropy:  # 3 x 5 = 15 combinations
+  m: [1, 2, 3]
+  r_multiplier: [0.1, 0.15, 0.2, 0.25, 0.3]  # r = multiplier * std(signal)
+
+approximate_entropy:  # 3 x 5 = 15 combinations
+  m: [1, 2, 3]
+  r_multiplier: [0.1, 0.15, 0.2, 0.25, 0.3]
+
+permutation_entropy:  # 5 x 5 = 25 combinations
+  order: [3, 4, 5, 6, 7]
+  delay: [1, 2, 3, 4, 5]
+
+fuzzy_entropy:  # 3 x 3 x 3 = 27 combinations
+  m: [1, 2, 3]
+  r_multiplier: [0.1, 0.2, 0.3]
+  n: [1, 2, 3]  # fuzzy exponent
+
+lempel_ziv_complexity:  # 3 x 2 = 6 combinations
+  threshold: [median, mean, zero]
+  multiscale: [false, true]
+
+# --- Time-Frequency Features ------------------------------------------------
+
+dwt:  # 9 x 4 = 36 combinations
+  wavelet: [db2, db4, db6, db8, sym2, sym4, sym6, coif1, coif3]
+  level: [3, 4, 5, 6]
+  # Sub-band features per level: energy = sum(coeff**2), std, entropy
+
+psd_welch:  # 4 x 4 x 3 = 48 combinations
+  window: [hamming, hanning, blackman, rectangular]
+  nperseg: [64, 128, 256, 512]
+  overlap_ratio: [0.25, 0.5, 0.75]  # noverlap = ratio * nperseg
+  # Band powers: delta(0.5-4), theta(4-8), alpha(8-13), beta(13-30), gamma(30-45)
+
+# --- Temporal / Complexity Features ------------------------------------------
+
+hjorth:  # 6 combinations
+  window_size_sec: [0.5, 1.0, 2.0, 3.0, 5.0, full]
+  # Segment is divided into windows of this length, parameters are averaged.
+  # Activity = var(x), Mobility = sqrt(var(dx)/var(x)),
+  # Complexity = Mobility(dx) / Mobility(x)
+
+hurst:  # 3 x 4 = 12 combinations
+  method: [rescaled_range, dfa, wavelet]
+  min_window: [4, 8, 16, 32]
+
+# =============================================================================
+# Classification (FIXED — not part of the grid search)
+# =============================================================================
+
+classification:
+  primary_model: lightgbm
+  validation_models: [xgboost, random_forest]
+  cv:
+    n_splits: 5
+    shuffle: true
+    random_state: 42
+  metrics: [accuracy, f1_macro, f1_weighted]
+
+lightgbm:
+  n_estimators: 200
+  max_depth: 6
+  learning_rate: 0.1
+  num_leaves: 31
+  min_child_samples: 20
+  subsample: 0.8
+  colsample_bytree: 0.8
+  random_state: 42
+  verbose: -1
+
+xgboost:
+  n_estimators: 200
+  max_depth: 6
+  learning_rate: 0.1
+  random_state: 42
+  use_label_encoder: false
+  eval_metric: mlogloss
+
+random_forest:
+  n_estimators: 200
+  max_depth: 10
+  random_state: 42
+
+# =============================================================================
+# Dataset
+# =============================================================================
+
+dataset:
+  name: bonn
+  sampling_rate: 173.61
+  samples_per_segment: 4096
+  tasks: [binary, ternary, five]
